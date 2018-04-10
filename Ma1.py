@@ -95,12 +95,12 @@ def fou(arr,Y,X):
 #print np.shape(go1)
 #print type(go1)
 
-go2 = fftpack.fft2(arr)
+#go2 = fftpack.fft2(arr)
 #print go1
-print np.shape(go2)
+#print np.shape(go2)
 #print type(go1)
 
-go3 = fou(arr,YY,XX)
+#go3 = fou(arr,YY,XX)
 #print np.shape(go3)
 #print type(go3)
 #print go3
@@ -110,11 +110,13 @@ for i in range(16):
     for j in range(16):
         print "Img"
         print arr[i][j]
-        print "GO2"
-        print go2[i][j]
+        print "GO1"
+        print go1[i][j]
         print "GO3"
         print go3[i][j]
 '''
+
+
 
 
 
@@ -149,22 +151,54 @@ for i in range(YY):
         gin[i][j] = gauss(i,j,wd)
 
 #Aplicar trans Fourier a gausiana
-#fouGA = fouG(XX,YY)
+fouGA = fouG(XX,YY)
 
-'''
+
 #print gin
 #print np.shape(gin)
 
 go4 = np.fft.fft2(gin)
 #print go4
-print np.shape(go4)
+#print np.shape(go4)
 #print type(go1)
 
-go5 = fouG(XX,YY)
+#go5 = fouG(XX,YY)
 #print go5
-print np.shape(go5)
-'''
+#print np.shape(go5)
 
+
+#Fourier Inversa para gauss
+def ifouG(FT,Y,X):
+    #Array donde se guardara info fourierizados
+    sol = np.zeros((Y,X), dtype = complex)
+    # num of samples
+    for n in range(Y):
+        for o in range(X):
+            #Contador de suma
+            g = 0.0
+            #Sumatorias
+            for k in range(Y-1):
+                for p in range(X-1):
+                    #este se multiplicaria por sr
+                    wy = (float(n*k)/float(Y))
+                    wx = (float(o*p)/float(X))
+                    ee = np.exp(1j*2*np.pi*(wy+wx))
+                    #aplicacion formula a suma de gauss
+                    g += FT[k][p]*ee
+
+            sol[n][o] = g
+
+    return sol
+
+go7 = np.fft.ifft2(go4)
+go9 = ifouG(fouGA,YY,XX)
+
+for i in range(16):
+    for j in range(16):
+        print "GOR"
+        print go7[i][j]
+        print "GOM"
+        print go9[i][j]
 
 
 #Display image
