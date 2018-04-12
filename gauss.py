@@ -23,16 +23,46 @@ print XX
 print(np.shape(arr))
 
 #Funcion que define gausiana del suavizado
-#Param:coordenada x, y y el ancho
+#Param:coordenada x, y y el ancho, centrada en (cx,cy)
 #Return:punto de gausiana resultante
-def gauss(x,y,anc):
+def gauss(x,y,anc,cx,cy):
     c = anc
+    #normalizacion
     a = 1/float(c*c*2*np.pi)
-    ff = x*x/float(2*c*c)
-    gg = y*y/float(2*c*c)
+
+    ux = (x-cx)*(x-cx)
+    uy = (y-cy)*(y-cy)
+
+    ff = ux/float(2*c*c)
+    gg = uy/float(2*c*c)
+
     ee = np.exp(-(ff+gg))
     sol = a*ee
     return sol
+
+#determinar centrado de gausiana en base a imagen
+#Param: dimensiones Y,X de la imagen
+#return: lista con centro de la imagen (cy,cx)
+def cen(Y,X):
+    sol = list()
+    cx = 0.0
+    cy = 0.0
+    if(Y%2 != 0):
+        cy = int((Y/2.0) + 1)
+    if(Y%2 == 0):
+        cy = int((Y/2.0))
+    if(X%2 != 0):
+        cx = int((X/2.0) + 1)
+    if(X%2 == 0):
+        cx = int((X/2.0))
+    sol.append(float(cy))
+    sol.append(float(cx))
+    return sol
+
+print cen(YY,XX)
+
+#Calcular centro de imagen
+cc = cen(YY,XX)
 
 #Array donde se guardara gausiana
 ga = np.zeros((YY,XX))
@@ -41,7 +71,7 @@ ga = np.zeros((YY,XX))
 #Generar gausiana en base a imagen
 for h in range(YY):
     for j in range(XX):
-        ga[h][j] = gauss(h,j,wd)
+        ga[h][j] = gauss(j,h,wd,cc[1],cc[0])
 
 #Fourier para gauss
 def fouG(Y,X):
@@ -60,7 +90,7 @@ def fouG(Y,X):
                     wx = (float(o*p)/float(X))
                     ee = np.exp(-1j*2.0*np.pi*(wy+wx))
                     #aplicacion formula a suma de gauss
-                    g+=gauss(p,k,wd)*ee
+                    g+=gauss(p,k,wd,cc[1],cc[0])*ee
 
             sol[n][o] = g
 

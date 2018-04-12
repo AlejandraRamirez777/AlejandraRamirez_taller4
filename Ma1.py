@@ -22,35 +22,59 @@ print YY
 print XX
 print(np.shape(arr))
 
+#Calcula el centro de la imagen
+#Param: dimensiones de la imagen Y,X
+#Return: lista con los centros (cy,cx)
+def cen(Y,X):
+    sol = list()
+    cx = 0.0
+    cy = 0.0
+    if(Y%2 != 0):
+        cy = int((Y/2.0) + 1)
+    if(Y%2 == 0):
+        cy = int((Y/2.0))
+    if(X%2 != 0):
+        cx = int((X/2.0) + 1)
+    if(X%2 == 0):
+        cx = int((X/2.0))
+    sol.append(float(cy))
+    sol.append(float(cx))
+    return sol
+
+#Calcular centro de imagen
+cc = cen(YY,XX)
+
 #Funcion que define gausiana del suavizado
-#Param:coordenada x, y y el ancho
+#Param:coordenada x, y y el ancho, centrada en (cx,cy)
 #Return:punto de gausiana resultante
-def gauss(x,y,anc):
+def gauss(x,y,anc,cx,cy):
     c = anc
+    #normalizacion
     a = 1/float(c*c*2*np.pi)
-    ff = x*x/float(2*c*c)
-    gg = y*y/float(2*c*c)
+
+    ux = (x-cx)*(x-cx)
+    uy = (y-cy)*(y-cy)
+
+    ff = ux/float(2*c*c)
+    gg = uy/float(2*c*c)
+
     ee = np.exp(-(ff+gg))
     sol = a*ee
     return sol
 
 #Array donde se guardara gausiana
 ga = np.zeros((YY,XX))
-#print ga
 
 #Generar gausiana en base a imagen
 for h in range(YY):
     for j in range(XX):
-        ga[h][j] = gauss(h,j,wd)
+        ga[h][j] = gauss(j,h,wd,cc[1],cc[0])
 
 #print ga
-
 
 #Funcion para hacer Fourier 2d
 #Param: array al que se le hara fourier (png)
 #Return: array de array (png) fourierizado
-
-
 def fou(arr,Y,X):
     #Array donde se guardara info de color de pixeles fourierizados
     sol = np.zeros((Y,X,4), dtype = complex)
@@ -86,32 +110,11 @@ def fou(arr,Y,X):
 #go1 = np.fft.fft2(arr)
 #print go1
 #print np.shape(go1)
-#print type(go1)
 
-#go2 = fftpack.fft2(arr)
-#print go1
-#print np.shape(go2)
-#print type(go1)
-
-#go3 = fou(arr,YY,XX)
-#print np.shape(go3)
-#print type(go3)
-#print go3
-
-'''
-for i in range(16):
-    for j in range(16):
-        print "Img"
-        print arr[i][j]
-        print "GO1"
-        print go1[i][j]
-        print "GO3"
-        print go3[i][j]
-'''
-
-
-
-
+#Aplicar transformada de Fourier a imagen
+#fIMG = fou(arr,YY,XX)
+#print fIMG
+#print np.shape(fIMG)
 
 #Fourier para gauss
 def fouG(Y,X):
@@ -130,34 +133,16 @@ def fouG(Y,X):
                     wx = (float(o*p)/float(X))
                     ee = np.exp(-1j*2.0*np.pi*(wy+wx))
                     #aplicacion formula a suma de gauss
-                    g+=gauss(p,k,wd)*ee
+                    g+=gauss(p,k,wd,cc[1],cc[0])*ee
 
             sol[n][o] = g
 
     return sol
 
-#Array de valores para la gausiana correspondiente
-gin = np.zeros((YY,XX))
-
-for i in range(YY):
-    for j in range(XX):
-        gin[i][j] = gauss(i,j,wd)
-
 #Aplicar trans Fourier a gausiana
-fouGA = fouG(XX,YY)
+#fouGA = fouG(YY,XX)
 
-
-#print gin
-#print np.shape(gin)
-
-go4 = np.fft.fft2(gin)
-#print go4
-#print np.shape(go4)
-#print type(go1)
-
-#go5 = fouG(XX,YY)
-#print go5
-#print np.shape(go5)
+go4 = np.fft.fft2(ga)
 
 
 #Fourier Inversa para gauss
@@ -184,6 +169,8 @@ def ifouG(FT,Y,X):
     return sol
 
 go7 = np.fft.ifft2(go4)
+
+'''
 go9 = ifouG(fouGA,YY,XX)
 
 for i in range(16):
@@ -192,6 +179,8 @@ for i in range(16):
         print go7[i][j]
         print "GOM"
         print go9[i][j]
+'''
+
 
 
 #Display image

@@ -47,19 +47,23 @@ def cen(Y,X):
         cx = int((X/2.0) + 1)
     if(X%2 == 0):
         cx = int((X/2.0))
-    sol.append(cy)
-    sol.append(cx)
+    sol.append(float(cy))
+    sol.append(float(cx))
     return sol
 
 #Calcular centro de imagen
 cc = cen(YY,XX)
 print cc
 
-xx = np.linspace(0,YY-1,YY)
-yyy = np.linspace(0,YY-1,YY)
+xx = np.linspace(0,35-1,35)
+yyy = np.linspace(0,35-1,35)
+print xx
 
-for i in xx:
-    yyy[i] = gaussx(i,wd,cc[0])
+for i in range(35):
+    print i
+    yyy[i] = gaussx(i,wd,cc[1])
+
+print yyy
 
 plt.plot(xx,yyy)
 plt.show()

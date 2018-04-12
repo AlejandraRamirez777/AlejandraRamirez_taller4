@@ -53,8 +53,8 @@ def cen(Y,X):
         cx = int((X/2.0) + 1)
     if(X%2 == 0):
         cx = int((X/2.0))
-    sol.append(cy)
-    sol.append(cx)
+    sol.append(float(cy))
+    sol.append(float(cx))
     return sol
 
 print cen(YY,XX)
@@ -69,7 +69,9 @@ ga = np.zeros((YY,XX))
 #Generar gausiana en base a imagen
 for h in range(YY):
     for j in range(XX):
-        ga[h][j] = gauss(h,j,wd,cc[0],cc[1])
+        ga[h][j] = gauss(j,h,wd,cc[1],cc[0])
+
+print ga        
 
 
 
