@@ -18,14 +18,13 @@ wd = float(inn[2])
 
 # covertir imagen del input a un array
 arr = plt.imread(name)
+print(np.shape(arr))
 
 #Dimensiones imagen
 #(y,x,capas)
-print(np.shape(arr))
 (YY, XX, capas) = np.shape(arr)
 print YY
 print XX
-print(np.shape(arr))
 
 gray = rgb2gray(arr)
 
