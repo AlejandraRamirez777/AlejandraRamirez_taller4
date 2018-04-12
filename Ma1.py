@@ -123,12 +123,12 @@ def fouG(Y,X):
             #Contador de suma
             g = 0.0
             #Sumatorias
-            for k in range(Y-1):
-                for p in range(X-1):
+            for k in range(Y):
+                for p in range(X):
                     #este se multiplicaria por sr
                     wy = (float(n*k)/float(Y))
                     wx = (float(o*p)/float(X))
-                    ee = np.exp(-1j*2*np.pi*(wy+wx))
+                    ee = np.exp(-1j*2.0*np.pi*(wy+wx))
                     #aplicacion formula a suma de gauss
                     g+=gauss(p,k,wd)*ee
 
