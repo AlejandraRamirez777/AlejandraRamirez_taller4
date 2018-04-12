@@ -57,37 +57,30 @@ def fou(arr,Y,X):
     # num of samples
     for n in range(Y):
         for o in range(X):
-            '''
-            fR = np.zeros((Y,X), dtype = complex)
-            fG = np.zeros((Y,X), dtype = complex)
-            fB = np.zeros((Y,X), dtype = complex)
-            ff = np.zeros((Y,X), dtype = complex)
-            four = np.array([fR,fG,fB,ff])
-            '''
             #Sumas de cada color de pixel
             sR = 0.0
             sG = 0.0
             sB = 0.0
             sf = 0.0
             #Sumatorias
-            for k in range(Y-1):
-                for p in range(X-1):
+            for k in range(Y):
+                for p in range(X):
                     #Se extraen colores de pixel
                     (R,G,B,f) = arr[k][p][:]
                     #este se multiplicaria por sr ?
                     wy = (float(n*k)/float(Y))
                     wx = (float(o*p)/float(X))
-                    ee = np.exp(-1j*2*np.pi*(wy+wx))
+                    ee = np.exp(-1j*2.0*np.pi*(wy+wx))
                     #aplicacion formula a suma
                     sR += ee*R
                     sG += ee*G
                     sB += ee*B
                     sf += ee*f
             #normalizacion ?
-            sol[n][o][0] = sR/float(Y)
-            sol[n][o][1] = sG/float(Y)
-            sol[n][o][2] = sB/float(Y)
-            sol[n][o][3] = sf/float(Y)
+            sol[n][o][0] = sR
+            sol[n][o][1] = sG
+            sol[n][o][2] = sB
+            sol[n][o][3] = sf
     return sol
 
 #go1 = np.fft.fft2(arr)
