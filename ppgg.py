@@ -73,10 +73,10 @@ print go1
 print np.shape(go1)
 #print type(go1)
 
-go3 = fou(arr,YY,XX)
-gray3 = rgb2gray(go3)
-print gray3
-print np.shape(gray3)
+#go3 = fou(arr,YY,XX)
+#gray3 = rgb2gray(go3)
+#print gray3
+#print np.shape(gray3)
 
 
 
@@ -84,8 +84,8 @@ print np.shape(gray3)
 
 
 
-#plt.imshow(gray, cmap = plt.get_cmap('gray'))
-
+plt.imshow(gray, cmap = plt.get_cmap('gray'))
+plt.savefig("bw")
 
 
 #plt.show()

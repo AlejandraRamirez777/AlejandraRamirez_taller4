@@ -96,6 +96,9 @@ for i in range(YY):
 '''
 
 #Display image
-plt.imshow(okk, cmap = plt.get_cmap('gray'))
-#plt.imshow(arrg)
-plt.show()
+#plt.imshow(okk, cmap = plt.get_cmap('gray'))
+plt.imshow(okk)
+plt.savefig("OKK.png")
+plt.imshow(arrg)
+#plt.show()
+plt.savefig("ARRG.png")

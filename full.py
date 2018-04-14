@@ -76,7 +76,7 @@ for h in range(YY):
         ga[h][j] = gauss(j,h,wd,cc[1],cc[0])
 
 #Fourier para gauss
-def fouG(Y,X):
+def fouG(arrGA, Y,X):
     #Array donde se guardara info fourierizados
     sol = np.zeros((Y,X), dtype = complex)
     # num of samples
@@ -87,12 +87,13 @@ def fouG(Y,X):
             #Sumatorias
             for k in range(Y):
                 for p in range(X):
+                    GG = arrGA[k][p]
                     #este se multiplicaria por sr
                     wy = (float(n*k)/float(Y))
                     wx = (float(o*p)/float(X))
                     ee = np.exp(-1j*2.0*np.pi*(wy+wx))
                     #aplicacion formula a suma de gauss
-                    g+=gauss(p,k,wd,cc[1],cc[0])*ee
+                    g += GG*ee
 
             sol[n][o] = g
 
@@ -121,14 +122,78 @@ def fou(arr,Y,X):
             sol[n][o] = sV
     return sol
 
+def trans(arra,Y,X,cy,cx):
+    a = np.copy(arra)
+    r = np.copy(arra)
+    ccy = cy-1
+    ccx = cx-1
+
+    if(Y%2 == 0 and X%2 ==0):
+
+        s1 = a[:cy,:cx]
+        s2 = a[:cy,cx:X]
+        s3 = a[cy:Y,:cx]
+        s4 = a[cy:Y,cx:X]
+
+        r[cy:Y,:cx] = s2
+        r[:cy,:cx] = s4
+        r[cy:Y,cx:X] = s1
+        r[:cy,cx:X] = s3
+
+    elif(Y%2 != 0 and X%2 !=0):
+        s1 = a[:cy,:cx]
+        s2 = a[:cy,cx:X]
+        s3 = a[cy:Y,:cx]
+        s4 = a[cy:Y,cx:X]
+
+        r[ccy:Y,:ccx] = s2
+        r[:ccy,:ccx] = s4
+        r[ccy:Y,ccx:X] = s1
+        r[:ccy,ccx:X] = s3
+
+    elif(Y%2 != 0 and X%2 ==0):
+
+        s1 = a[:cy,:cx]
+        s2 = a[:cy,cx:X]
+        s3 = a[cy:Y,:cx]
+        s4 = a[cy:Y,cx:X]
+
+        r[ccy:Y,:cx] = s2
+        r[:ccy,:cx] = s4
+        r[ccy:Y,cx:X] = s1
+        r[:ccy,cx:X] = s3
+
+    elif(Y%2 == 0 and X%2 !=0):
+
+        s1 = a[:cy,:cx]
+        s2 = a[:cy,cx:X]
+        s3 = a[cy:Y,:cx]
+        s4 = a[cy:Y,cx:X]
+
+        r[cy:Y,:ccx] = s2
+        r[:cy,:ccx] = s4
+        r[cy:Y,ccx:X] = s1
+        r[:cy,ccx:X] = s3
+
+    return r
+
 #Aplicar trans Fourier a gausiana
-fGA = fouG(YY,XX)
+fGA = fouG(ga,YY,XX)
+#go1 = np.fft.fft2(ga)
 
 #Aplicar transformada de Fourier a imagen
 fIM = fou(arrg,YY,XX)
+#go2 = np.fft.fft2(arrg)
+
+#Puzzle
+#fGA2 = trans(fGA,YY,XX,cc[0],cc[1])
+#fIM2 = trans(fIM,YY,XX,cc[0],cc[1])
 
 #Convolucion - Multiplicacion de transformadas (gauss e imagen)
 conv = fGA*fIM
+#COV = go1*go2
+
+#conv1 = trans(conv,YY,XX,cc[0],cc[1])
 
 
 def ifouG(FT,Y,X):
@@ -158,8 +223,18 @@ def ifouG(FT,Y,X):
 #Inversa de Convolucion
 invC = ifouG(conv,YY,XX)
 
+kk = trans(invC,YY,XX,cc[0],cc[1])
+#II = np.fft.ifft2(COV)
+'''
+for i in range(YY):
+    for j in range(XX):
+        print "OK"
+        print II[i][j]
+        print invC[i][j]
+'''
 
 #Display image
-plt.imshow(invC, cmap = plt.get_cmap('gray'))
+plt.imshow(kk, cmap = plt.get_cmap('gray'))
+plt.savefig("asa2.png")
 #plt.imshow(arrg)
 plt.show()
