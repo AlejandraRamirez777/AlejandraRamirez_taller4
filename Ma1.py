@@ -2,24 +2,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 
-from scipy import fftpack
-
 #Info input by user en forma de lista
 #[0] nombre del .py - [1] nombre imagen - [2] ancho de gausiana
 inn = sys.argv
 name = inn[1]
 wd = float(inn[2])
 
-
 # covertir imagen del input a un array
-arr = plt.imread(name)
-print(np.shape(arr))
+arr = plt.imread(name))
 
 #Dimensiones imagen
-#(y,x,capas)
 (YY, XX, capas) = np.shape(arr)
-print YY
-print XX
 
 #Calcula el centro de la imagen
 #Param: dimensiones de la imagen Y,X
@@ -69,8 +62,6 @@ for h in range(YY):
     for j in range(XX):
         ga[h][j] = gauss(j,h,wd,cc[1],cc[0])
 
-#print ga
-
 #Funcion para hacer Fourier 2d
 #Param: array al que se le hara fourier (png)
 #Return: array de array (png) fourierizado
@@ -106,14 +97,8 @@ def fou(arr,Y,X):
             sol[n][o][3] = sf
     return sol
 
-#go1 = np.fft.fft2(arr)
-#print go1
-#print np.shape(go1)
 
-#Aplicar transformada de Fourier a imagen
 fIM = fou(arr,YY,XX)
-#print fIM
-#print np.shape(fIM)
 
 #Fourier para gauss
 def fouG(Y,X):
@@ -140,6 +125,61 @@ def fouG(Y,X):
             sol[n][o][3] = g
 
     return sol
+
+def trans(arra,Y,X,cy,cx):
+    a = np.copy(arra)
+    r = np.copy(arra)
+    ccy = cy-1
+    ccx = cx-1
+
+    if(Y%2 == 0 and X%2 ==0):
+
+        s1 = a[:cy,:cx]
+        s2 = a[:cy,cx:X]
+        s3 = a[cy:Y,:cx]
+        s4 = a[cy:Y,cx:X]
+
+        r[cy:Y,:cx] = s2
+        r[:cy,:cx] = s4
+        r[cy:Y,cx:X] = s1
+        r[:cy,cx:X] = s3
+
+    elif(Y%2 != 0 and X%2 !=0):
+        s1 = a[:cy,:cx]
+        s2 = a[:cy,cx:X]
+        s3 = a[cy:Y,:cx]
+        s4 = a[cy:Y,cx:X]
+
+        r[ccy:Y,:ccx] = s2
+        r[:ccy,:ccx] = s4
+        r[ccy:Y,ccx:X] = s1
+        r[:ccy,ccx:X] = s3
+
+    elif(Y%2 != 0 and X%2 ==0):
+
+        s1 = a[:cy,:cx]
+        s2 = a[:cy,cx:X]
+        s3 = a[cy:Y,:cx]
+        s4 = a[cy:Y,cx:X]
+
+        r[ccy:Y,:cx] = s2
+        r[:ccy,:cx] = s4
+        r[ccy:Y,cx:X] = s1
+        r[:ccy,cx:X] = s3
+
+    elif(Y%2 == 0 and X%2 !=0):
+
+        s1 = a[:cy,:cx]
+        s2 = a[:cy,cx:X]
+        s3 = a[cy:Y,:cx]
+        s4 = a[cy:Y,cx:X]
+
+        r[cy:Y,:ccx] = s2
+        r[:cy,:ccx] = s4
+        r[cy:Y,ccx:X] = s1
+        r[:cy,ccx:X] = s3
+
+    return r
 
 #Aplicar trans Fourier a gausiana
 fGA = fouG(YY,XX)
@@ -187,22 +227,8 @@ def ifouG(FT,Y,X):
 #Inversa de Convolucion
 invC = ifouG(conv,YY,XX)
 
-
-#go7 = np.fft.ifft2(go4)
-
-'''
-go9 = ifouG(fouGA,YY,XX)
-
-for i in range(16):
-    for j in range(16):
-        print "GOR"
-        print go7[i][j]
-        print "GOM"
-        print go9[i][j]
-'''
-
-
+kk = trans(invC,YY,XX,cc[0],cc[1])
 
 #Display image
-plt.imshow(invC)
+plt.imshow(kk)
 plt.show()
