@@ -9,7 +9,7 @@ name = inn[1]
 wd = float(inn[2])
 
 # covertir imagen del input a un array
-arr = plt.imread(name))
+arr = plt.imread(name)
 
 #Dimensiones imagen
 (YY, XX, capas) = np.shape(arr)
@@ -62,9 +62,38 @@ for h in range(YY):
     for j in range(XX):
         ga[h][j] = gauss(j,h,wd,cc[1],cc[0])
 
-#Funcion para hacer Fourier 2d
-#Param: array al que se le hara fourier (png)
-#Return: array de array (png) fourierizado
+#Fourier para gausiana 2d
+#Param: gausiana a transformar, dimensiones Y y X de esta
+#Return: transformada de Fourier para gausiana
+def fouG(arrGA,Y,X):
+    #Array donde se guardara info fourierizados
+    sol = np.zeros((Y,X,4), dtype = complex)
+    # num of samples
+    for n in range(Y):
+        for o in range(X):
+            #Contador de suma
+            g = 0.0
+            #Sumatorias
+            for k in range(Y):
+                for p in range(X):
+                    GG = arrGA[k][p]
+
+                    wy = (float(n*k)/float(Y))
+                    wx = (float(o*p)/float(X))
+                    ee = np.exp(-1j*2.0*np.pi*(wy+wx))
+                    #aplicacion formula a suma de gauss
+                    g += GG*ee
+
+            sol[n][o][0] = g
+            sol[n][o][1] = g
+            sol[n][o][2] = g
+            sol[n][o][3] = g
+
+    return sol
+
+#Fourier 2d de imagen
+#Param: array de imagen PNG a transformar, dimensiones Y y X de esta
+#Return: transformada de fourier de imagen
 def fou(arr,Y,X):
     #Array donde se guardara info de color de pixeles fourierizados
     sol = np.zeros((Y,X,4), dtype = complex)
@@ -81,7 +110,7 @@ def fou(arr,Y,X):
                 for p in range(X):
                     #Se extraen colores de pixel
                     (R,G,B,f) = arr[k][p][:]
-                    #este se multiplicaria por sr ?
+
                     wy = (float(n*k)/float(Y))
                     wx = (float(o*p)/float(X))
                     ee = np.exp(-1j*2.0*np.pi*(wy+wx))
@@ -90,42 +119,16 @@ def fou(arr,Y,X):
                     sG += ee*G
                     sB += ee*B
                     sf += ee*f
-            #normalizacion ?
+
             sol[n][o][0] = sR
             sol[n][o][1] = sG
             sol[n][o][2] = sB
             sol[n][o][3] = sf
     return sol
 
-
-fIM = fou(arr,YY,XX)
-
-#Fourier para gauss
-def fouG(Y,X):
-    #Array donde se guardara info fourierizados
-    sol = np.zeros((Y,X,4), dtype = complex)
-    # num of samples
-    for n in range(Y):
-        for o in range(X):
-            #Contador de suma
-            g = 0.0
-            #Sumatorias
-            for k in range(Y):
-                for p in range(X):
-                    #este se multiplicaria por sr
-                    wy = (float(n*k)/float(Y))
-                    wx = (float(o*p)/float(X))
-                    ee = np.exp(-1j*2.0*np.pi*(wy+wx))
-                    #aplicacion formula a suma de gauss
-                    g+=gauss(p,k,wd,cc[1],cc[0])*ee
-
-            sol[n][o][0] = g
-            sol[n][o][1] = g
-            sol[n][o][2] = g
-            sol[n][o][3] = g
-
-    return sol
-
+#Funcion para reubicar los resultados de transformada de fourier
+#Param: array para reubicar contenido, dimensiones Y y X de este, centro del Array
+#Return: mismo array con sus 4 cuadrantes reubicados diagonalmente
 def trans(arra,Y,X,cy,cx):
     a = np.copy(arra)
     r = np.copy(arra)
@@ -182,15 +185,17 @@ def trans(arra,Y,X,cy,cx):
     return r
 
 #Aplicar trans Fourier a gausiana
-fGA = fouG(YY,XX)
+fGA = fouG(ga,YY,XX)
 
-#Convolucion - Multiplicacion de transformadas (gauss e imagen)
+#Aplicar transformada de Fourier a imagen
+fIM = fou(arr,YY,XX)
+
+#Convolucion - Multiplicacion de transformadas (gausiana e imagen)
 conv = fGA*fIM
 
-#go4 = np.fft.fft2(ga)
-
-
-#Fourier Inversa
+#Transformada de Fourier inversa 2d
+#Param:array fourierizado, dimensiones Y y X de este
+#Return:transformada inversa de Fourier
 def ifouG(FT,Y,X):
     #Array donde se guardara info fourierizados
     sol = np.zeros((Y,X,4), dtype = int)
@@ -211,7 +216,7 @@ def ifouG(FT,Y,X):
                     wy = (float(n*k)/float(Y))
                     wx = (float(o*p)/float(X))
                     ee = np.exp(1j*2.0*np.pi*(wy+wx))
-                    #aplicacion formula a suma de gauss
+                    
                     sR += ee*R
                     sG += ee*G
                     sB += ee*B
@@ -227,8 +232,10 @@ def ifouG(FT,Y,X):
 #Inversa de Convolucion
 invC = ifouG(conv,YY,XX)
 
-kk = trans(invC,YY,XX,cc[0],cc[1])
+#Reubicacion de array resultante
+final = trans(invC,YY,XX,cc[0],cc[1])
 
-#Display image
-plt.imshow(kk)
-plt.show()
+#Save image
+#Se utiliza cmap para que imshow lea imagen como escala de grises
+plt.imshow(final, cmap = plt.get_cmap('gray'))
+plt.savefig("suaveColor.png")

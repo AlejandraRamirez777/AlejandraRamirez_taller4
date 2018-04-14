@@ -213,7 +213,7 @@ def ifouG(FT,Y,X):
                     wy = (float(n*k)/float(Y))
                     wx = (float(o*p)/float(X))
                     ee = np.exp(1j*2.0*np.pi*(wy+wx))
-                    #aplicacion formula a suma de gauss
+                    
                     sV += ee*V
 
             sol[n][o] = (sV/float(X)/float(Y)).real
