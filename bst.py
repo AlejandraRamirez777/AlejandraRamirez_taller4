@@ -2,14 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 
-#SE RECOMIENDA UTILIZAR UN ANCHO DE LA GAUSIANA EQUIVALENTE A 1/40 - 1/20
-#DE LAS DIMENSIONES DE LA IMAGEN PARA VISUALIZAR EL FILTRO CLARAMENTE.
-
 #Info input by user en forma de lista
 #[0] nombre del .py - [1] nombre imagen - [2] ancho de gausiana
 inn = sys.argv
 name = inn[1]
-wd = float(inn[2])
+des = inn[2]
 
 # covertir imagen del input a un array
 arr = plt.imread(name)
@@ -47,84 +44,6 @@ def cen(Y,X):
 
 #Calcular centro de imagen
 cc = cen(YY,XX)
-
-#Funcion que define gausiana del suavizado
-#Param:coordenada x, y y el ancho, centrada en (cx,cy)
-#Return:punto de gausiana resultante
-def gauss(x,y,anc,cx,cy):
-    c = anc
-    #normalizacion
-    a = 1/float(c*c*2*np.pi)
-
-    ux = (x-cx)*(x-cx)
-    uy = (y-cy)*(y-cy)
-
-    ff = ux/float(2*c*c)
-    gg = uy/float(2*c*c)
-
-    ee = np.exp(-(ff+gg))
-    sol = a*ee
-    return sol
-
-#Array donde se guardara gausiana
-ga = np.zeros((YY,XX))
-
-#Generar gausiana en base a imagen
-for h in range(YY):
-    for j in range(XX):
-        ga[h][j] = gauss(j,h,wd,cc[1],cc[0])
-
-#Fourier para gausiana 2d
-#Param: gausiana a transformar, dimensiones Y y X de esta
-#Return: transformada de Fourier para gausiana
-def fouG(arrGA, Y,X):
-    #Array donde se guardara info fourierizados
-    sol = np.zeros((Y,X), dtype = complex)
-    # num of samples
-    for n in range(Y):
-        for o in range(X):
-            #Contador de suma
-            g = 0.0
-            #Sumatorias
-            for k in range(Y):
-                for p in range(X):
-                    GG = arrGA[k][p]
-
-                    wy = (float(n*k)/float(Y))
-                    wx = (float(o*p)/float(X))
-                    ee = np.exp(-1j*2.0*np.pi*(wy+wx))
-                    #aplicacion formula a suma de gauss
-                    g += GG*ee
-
-            sol[n][o] = g
-
-    return sol
-
-#Fourier 2d de imagen
-#Param: array de imagen grayscale a transformar, dimensiones Y y X de esta
-#Return: transformada de fourier de imagen
-def fou(arr,Y,X):
-    #Array donde se guardara info de color de pixeles fourierizados
-    sol = np.zeros((Y,X), dtype = complex)
-    # num of samples
-    for n in range(Y):
-        for o in range(X):
-            #Suma
-            sV = 0.0
-            #Sumatorias
-            for k in range(Y):
-                for p in range(X):
-                    #Se extrae pixel
-                    V = arr[k][p]
-
-                    wy = (float(n*k)/float(Y))
-                    wx = (float(o*p)/float(X))
-                    ee = np.exp(-1j*2.0*np.pi*(wy+wx))
-                    #aplicacion formula a suma
-                    sV += ee*V
-
-            sol[n][o] = sV
-    return sol
 
 #Funcion para reubicar los resultados de transformada de fourier
 #Param: array para reubicar contenido, dimensiones Y y X de este, centro del Array
@@ -184,14 +103,59 @@ def trans(arra,Y,X,cy,cx):
 
     return r
 
-#Aplicar trans Fourier a gausiana
-fGA = fouG(ga,YY,XX)
+#Fourier 2d de imagen
+#Param: array de imagen grayscale a transformar, dimensiones Y y X de esta
+#Return: transformada de fourier de imagen
+def fou(arr,Y,X):
+    #Array donde se guardara info de color de pixeles fourierizados
+    sol = np.zeros((Y,X), dtype = complex)
+    # num of samples
+    for n in range(Y):
+        for o in range(X):
+            #Suma
+            sV = 0.0
+            #Sumatorias
+            for k in range(Y):
+                for p in range(X):
+                    #Se extrae pixel
+                    V = arr[k][p]
+
+                    wy = (float(n*k)/float(Y))
+                    wx = (float(o*p)/float(X))
+                    ee = np.exp(-1j*2.0*np.pi*(wy+wx))
+                    #aplicacion formula a suma
+                    sV += ee*V
+
+            sol[n][o] = sV
+    return sol
 
 #Aplicar transformada de Fourier a imagen
 fIM = fou(arrg,YY,XX)
 
-#Convolucion - Multiplicacion de transformadas (gausiana e imagen)
-conv = fGA*fIM
+#print np.max(fIM)
+#print np.min(fIM)
+#print np.mean(fIM)
+
+#Deja pasar altas
+def highS(FT,Y,X):
+    for i in range(Y):
+        for j in range(X):
+            if(FT[i][j]<1):
+                FT[i][j] = 0.0
+            else:
+                FT[i][j] = FT[i][j]
+    return FT
+
+#Deja pasar bajas
+def lowS(FT,Y,X):
+    for i in range(Y):
+        for j in range(X):
+            if(FT[i][j]>1):
+                FT[i][j] = 0.0
+            else:
+                FT[i][j] = FT[i][j]
+    return FT
+
 
 #Transformada de Fourier inversa 2d
 #Param:array fourierizado, dimensiones Y y X de este
@@ -220,13 +184,29 @@ def ifouG(FT,Y,X):
 
     return sol
 
-#Inversa de Convolucion
-invC = ifouG(conv,YY,XX)
+if(des == "altas" or des == "alto"):
+    High = highS(fIM,YY,XX)
+    invH = ifouG(High,YY,XX)
+    #Save image
+    #Se utiliza cmap para que imshow lea imagen como escala de grises
+    plt.imshow(invH, cmap = plt.get_cmap('gray'))
+    #plt.savefig("altas.png")
+    plt.show()
+
+if(des == "bajas" or des == "bajo"):
+    Low = lowS(fIM,YY,XX)
+    invL = ifouG(Low,YY,XX)
+    #Save image
+    #Se utiliza cmap para que imshow lea imagen como escala de grises
+    plt.imshow(invL, cmap = plt.get_cmap('gray'))
+    #plt.savefig("altas.png")
+    plt.show()
 
 #Reubicacion de array resultante
-final = trans(invC,YY,XX,cc[0],cc[1])
+#final = trans(inv,YY,XX,cc[0],cc[1])
 
 #Save image
 #Se utiliza cmap para que imshow lea imagen como escala de grises
-plt.imshow(final, cmap = plt.get_cmap('gray'))
-plt.savefig("suave.png")
+#plt.imshow(inv, cmap = plt.get_cmap('gray'))
+#plt.savefig("suave.png")
+#plt.show()
