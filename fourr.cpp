@@ -1,9 +1,24 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <math.h>
+#include <complex>
+#include <cmath>
+#include <iomanip>
+#include <vector>
+#include <stdio.h>
+#include <complex.h>
+#include <tgmath.h>
+
 using namespace std;
 
+#define _USE_MATH_DEFINES
+const complex<double> J(0.0, 1.0);
+
 double lagrange(double x, int G, double *setX, double *setY);
+//complex<double> fou(double *unP, int N);
+//vector<double> fou(double *unP, int N);
+vector<complex<double> > fou(double *unP, int N);
 
 int main(int argc, char **argv){
 
@@ -77,12 +92,21 @@ int main(int argc, char **argv){
 */
 
 cout << numL<< endl;
+
+    //Inicializar array con su pointer donde se guardara Lagrange
+    double LL[numL];
+    double *LLp;
+    LLp = LL;
 /*
     //EJECUTAR POLINOMIO DE LAGRANGE PARA CADA VALOR
-    for(int i = 0; i<numL; i++){
-        double ll = lagrange(t[i],numL, tp,ftp);
-        cout << ll << endl;
+    for(int i = 0; i<73; i++){
+        //cout << "OK" << endl;
+        //cout << i << endl;
+        double ll = lagrange(i,numL,tp,ftp);
+        //cout << ll << endl;
+        LL[i] = ll;
 
+        //cout << LL[i] << endl;
     }
 */
 /*
@@ -91,11 +115,22 @@ cout << numL<< endl;
         cout << ll << endl;
 
     }
-*/
+
 
     double ll = lagrange(754.8,numL,tp,ftp);
     cout << ll << endl;
+*/
 
+    //Fourier
+    //fou(LLp,numL);
+
+    double aa[10] = {0,1,2,3,4,5,6,7,8,9};
+    //complex<double>ff[10] = fou(aa,10);
+    vector<complex<double> > ff = fou(aa,10);
+
+    for(int i = 0; i<10; i++){
+        cout << ff[i]<<endl;
+    }
 return 0;
 }
 
@@ -130,4 +165,23 @@ double lagrange(double x, int G, double *setX, double *setY){
     }
 
     return ans;
+}
+
+vector<complex<double> > fou(double *unP, int N){
+      vector<complex<double> > sol;
+
+      for (int n = 0; n<N; n++){
+          complex<double> g = 0;
+
+          for (int k = 0; k<N; k++){
+              double w = (n/float(N));
+              double kk = double(k);
+              complex<double> y =-J*2.0*M_PI*kk*w;
+              complex<double> m = exp(y);
+              g += unP[k]*m;
+          }
+         sol.push_back(g);
+      }
+
+      return sol;
 }
