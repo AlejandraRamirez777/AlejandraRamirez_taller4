@@ -5,20 +5,25 @@ using namespace std;
 
 double lagrange(double x, int G, double *setX, double *setY);
 
-int main(){
+int main(int argc, char **argv){
+
+    //info inputs
+    //nombre del archivo ingresado
+    string name = argv[1];
 
     //LEER EL TXT
     ifstream inl;
 
     //Contador de lineas
     int numL = 0;
+    //info line
     string s;
 
     //Contador avance lineas
-    int g = 0; // num must start at 0
+    int g = 0;
 
     //Abrir el archivo
-    inl.open("datos.txt");
+    inl.open(name);
 
     //Si se produce algun error leyendolo se maneja
     if(inl.fail()){
@@ -29,8 +34,10 @@ int main(){
     //Lee todo el archivo hasta el final
     while(!inl.eof()){
         getline(inl,s);
-        //cuenta el numero de lineas
+        //cuenta el numero de lineas que no esten vacias
+        if(s != ""){
         ++numL;
+      }
     }
     //Cierre archivo
     inl.close();
@@ -47,7 +54,7 @@ int main(){
     ftp = ft;
 
     //Abre archivo
-    inl.open("datos.txt");
+    inl.open(name);
 
    //Lee todo el archivo hasta el final
     while(!inl.eof()){
@@ -67,15 +74,27 @@ int main(){
          cout << t[i] << " "<< endl;
          cout << ft[i] << " "<< endl;
     }
-cout << numL<< endl;
 */
 
+cout << numL<< endl;
+/*
     //EJECUTAR POLINOMIO DE LAGRANGE PARA CADA VALOR
     for(int i = 0; i<numL; i++){
         double ll = lagrange(t[i],numL, tp,ftp);
         cout << ll << endl;
 
     }
+*/
+/*
+    for(int i = 15; i<22; i++){
+        double ll = lagrange(i,numL, tp,ftp);
+        cout << ll << endl;
+
+    }
+*/
+
+    double ll = lagrange(754.8,numL,tp,ftp);
+    cout << ll << endl;
 
 return 0;
 }
@@ -94,7 +113,7 @@ double lagrange(double x, int G, double *setX, double *setY){
 
             if(i != p){
               if(b == 0){
-                cout << "PAILA" << endl;
+                cout << "Error division entre 0" << endl;
               }
               l *= a/b;
             }
@@ -104,9 +123,11 @@ double lagrange(double x, int G, double *setX, double *setY){
 
     for (int i = 0; i<G; i++){
         ans += sol[i]*setY[i];
-        //cout << ans << endl;
-
+    }
+    //Aproximacion al cero
+    if(ans<0.00000000000000001){
+      ans = 0;
     }
 
-return ans;
+    return ans;
 }
