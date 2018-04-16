@@ -18,6 +18,7 @@ const complex<double> J(0.0, 1.0);
 double lagrange(double x, int G, double *setX, double *setY);
 vector<complex<double> > fou(double *unP, int N);
 vector<double> ffreq(double n, double sp);
+vector<double> rear(vector<double> inar);
 
 int main(int argc, char **argv){
 
@@ -132,11 +133,20 @@ int main(int argc, char **argv){
     //}
     //Size de array de transformadas de fourier
     int size  = ff.size();
-    cout << size<<endl;
-    cout << "size"<<endl;
-    vector<double> ffr = ffreq(9,0.1);
-    for(int i = 0; i<9; i++){
+    //cout << size<<endl;
+    //cout << "size"<<endl;
+    vector<double> ffr = ffreq(12,0.1);
+    //loop must be same size as n ffreq
+    for(int i = 0; i<12; i++){
         cout << ffr[i]<<endl;
+    }
+    int size1  = ffr.size();
+    //cout << size1<<endl;
+
+    cout << "rears"<<endl;
+    vector<double> re = rear(ffr);
+    for(int i = 0; i<12; i++){
+        cout << re[i]<<endl;
     }
 
 return 0;
@@ -209,7 +219,6 @@ vector<complex<double> > fou(double *unP, int N){
 vector<double> ffreq(double n, double sp){
     vector<double> sol;
     double cen = int(n/2.0);
-    cout << cen <<endl;
     //Para N par
     if(fmod(n, 2.0) == 0.0){
         for (int k = 0; k<cen+1; k++){
@@ -239,6 +248,39 @@ vector<double> ffreq(double n, double sp){
       for (int k = cen+1; k --> 0;){
 
           double a = -k/(n*sp);
+          sol.push_back(a);
+      }
+    }
+    return sol;
+}
+
+//Reorganiza las frecuencias obtenidas por ffreq ascendentemente
+//Param: array de size variable de frecuencias dadas por fftfreq
+//Return: array de input organizado
+vector<double> rear(vector<double> inar){
+    vector<double> sol;
+    int n = inar.size();
+    //Redondea hacia abajo
+    double cenP = int(n/2.0);
+    double cenI = int((n+1)/2.0);
+    //size de inar par
+    if(fmod(n, 2.0) != 0.0){
+        for (int k = cenI-1; k<(cenI-1)*2; k++){
+            double a = inar[k];
+            sol.push_back(a);
+        }
+        for (int k = 0; k<cenI; k++){
+            double a = inar[k];
+            sol.push_back(a);
+        }
+    }
+    else{
+      for (int k = cenP; k<cenP*2; k++){
+          double a = inar[k];
+          sol.push_back(a);
+      }
+      for (int k = 1; k<cenP; k++){
+          double a = inar[k];
           sol.push_back(a);
       }
     }

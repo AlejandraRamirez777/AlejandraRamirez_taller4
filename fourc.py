@@ -30,7 +30,7 @@ print fourier
 n = signal.size
 print n
 timestep = 0.1
-freq = np.fft.fftfreq(9, d=timestep)
+freq = np.fft.fftfreq(6, d=timestep)
 print  freq
 plt.scatter(freq,abs(fourier))
 plt.show()
