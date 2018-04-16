@@ -16,5 +16,8 @@ c = np.genfromtxt("result.txt")
 d = np.fft.fft(c)
 e = np.fft.fftfreq(12,1.27273)
 
-print d
-print e
+f = np.fft.fftshift(d)
+g = np.fft.fftshift(e)
+
+print g
+print f

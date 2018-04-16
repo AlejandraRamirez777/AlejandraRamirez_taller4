@@ -84,12 +84,13 @@ int main(int argc, char **argv){
     inl.close();
 
 
-    /*
+
+/*
     for(int i = 0; i<numL; i++){
          cout << t[i] << " "<< endl;
          cout << ft[i] << " "<< endl;
     }
-    */
+*/
 
     //cout << numL<< endl;
 
@@ -113,12 +114,11 @@ int main(int argc, char **argv){
     int yp = 0;
 
     //cout << "PL"<< endl;
-
     //EJECUTAR POLINOMIO DE LAGRANGE PARA CADA VALOR
     while(z <= maxt+1){
       //cout << z << endl;
       double ll = lagrange(z,numL,tp,ftp);
-      //cout << ll << endl;
+      cout << "";
       LL[yp] = ll;
       z +=h;
       yp++;
@@ -134,23 +134,21 @@ int main(int argc, char **argv){
     //Aplicar Fourier f(t) evenly spaced
     vector<complex<double> > fourier = fou(LLp,numL);
 
-    //Rearrange del array de transformadas
+    //Rearrange el array de transformadas
     vector<complex<double> > Rfou = rearTT(fourier);
 
-    
+    /*
     cout << "FT"<<endl;
     for(int i = 0; i<numL; i++){
         cout << fourier[i]<<endl;
     }
-
-
+    */
     /*
-    cout << "FT -OR"<<endl;
+     cout << "FT -OR"<<endl;
     for(int i = 0; i<numL; i++){
         cout << Rfou[i]<<endl;
     }
     */
-
 
     //fftreq para obtener frecuencias
     vector<double> ffr = ffreq(numL,h);
@@ -163,17 +161,17 @@ int main(int argc, char **argv){
     for(int i = 0; i<numL; i++){
         cout << ffr[i]<<endl;
     }
-
+    */
+    /*
     cout << "FFREQ-OR"<<endl;
     for(int i = 0; i<numL; i++){
         cout << Rffr[i]<<endl;
     }
     */
 
-
-    //for(int i = 0; i<numL; i++){
-    //    cout << Rffr[i] << " " << Rfou[i].real() << " " << Rfou[i].imag() << endl;
-    //}
+    for(int i = 0; i<numL; i++){
+        cout << Rffr[i] << " " << Rfou[i].real() << " " << Rfou[i].imag() << endl;
+    }
 
 return 0;
 }
