@@ -84,81 +84,96 @@ int main(int argc, char **argv){
     inl.close();
 
 
-
-/*
+    /*
     for(int i = 0; i<numL; i++){
          cout << t[i] << " "<< endl;
          cout << ft[i] << " "<< endl;
     }
-*/
+    */
 
-//cout << numL<< endl;
+    //cout << numL<< endl;
+
+    //Maximo y minimo elemento de los tiempos
+    double mint = *min_element(t,t+numL);
+    double maxt = *max_element(t,t+numL);
+
+    //Salto uniforme
+    double h = (maxt-mint)/(numL-1);
+
+    //cout << mint << " "<< endl;
+    //cout << maxt << " "<< endl;
 
     //Inicializar array con su pointer donde se guardara Lagrange
     double LL[numL];
     double *LLp;
     LLp = LL;
-/*
+
+    //Contadores del while
+    double z = mint;
+    int yp = 0;
+
+    //cout << "PL"<< endl;
+
     //EJECUTAR POLINOMIO DE LAGRANGE PARA CADA VALOR
-    for(int i = 0; i<73; i++){
-        //cout << "OK" << endl;
-        //cout << i << endl;
-        double ll = lagrange(i,numL,tp,ftp);
-        //cout << ll << endl;
-        LL[i] = ll;
-
-        //cout << LL[i] << endl;
+    while(z <= maxt+1){
+      //cout << z << endl;
+      double ll = lagrange(z,numL,tp,ftp);
+      //cout << ll << endl;
+      LL[yp] = ll;
+      z +=h;
+      yp++;
+      //cout << LL[i] << endl;
     }
-*/
+
+
 /*
-    for(int i = 15; i<22; i++){
-        double ll = lagrange(i,numL, tp,ftp);
-        cout << ll << endl;
-
-    }
-
-
     double ll = lagrange(754.8,numL,tp,ftp);
     cout << ll << endl;
 */
 
-    //Fourier
-    //fou(LLp,numL);
+    //Aplicar Fourier f(t) evenly spaced
+    vector<complex<double> > fourier = fou(LLp,numL);
 
-    double aa[10] = {0,1,2,3,4,5,6};
-    //complex<double>ff[10] = fou(aa,10);
-    vector<complex<double> > ff = fou(aa,7);
+    //Rearrange del array de transformadas
+    vector<complex<double> > Rfou = rearTT(fourier);
 
-    for(int i = 0; i<7; i++){
-        cout << ff[i]<<endl;
+    
+    cout << "FT"<<endl;
+    for(int i = 0; i<numL; i++){
+        cout << fourier[i]<<endl;
     }
 
-    vector<complex<double> > rFt = rearTT(ff);
-
-    cout << "Mariscos"<<endl;
-    for(int i = 0; i<7; i++){
-        cout << rFt[i]<<endl;
-    }
 
     /*
-    //Size de array de transformadas de fourier
-    int size  = ff.size();
-    cout << size<<endl;
-    cout << "size"<<endl;
-    vector<double> ffr = ffreq(10,0.1);
-    //loop must be same size as n ffreq
-    for(int i = 0; i<10; i++){
-        cout << ffr[i]<<endl;
-    }
-    int size1  = ffr.size();
-    cout << size1<<endl;
-
-    cout << "rears"<<endl;
-    vector<double> re = rear(ffr);
-    for(int i = 0; i<10; i++){
-        cout << re[i]<<endl;
+    cout << "FT -OR"<<endl;
+    for(int i = 0; i<numL; i++){
+        cout << Rfou[i]<<endl;
     }
     */
+
+
+    //fftreq para obtener frecuencias
+    vector<double> ffr = ffreq(numL,h);
+
+    //rearrange de fftreq frecuencias
+    vector<double>  Rffr = rear(ffr);
+
+    /*
+    cout << "FFREQ"<<endl;
+    for(int i = 0; i<numL; i++){
+        cout << ffr[i]<<endl;
+    }
+
+    cout << "FFREQ-OR"<<endl;
+    for(int i = 0; i<numL; i++){
+        cout << Rffr[i]<<endl;
+    }
+    */
+
+
+    //for(int i = 0; i<numL; i++){
+    //    cout << Rffr[i] << " " << Rfou[i].real() << " " << Rfou[i].imag() << endl;
+    //}
 
 return 0;
 }
