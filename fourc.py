@@ -2,12 +2,12 @@ import numpy as np
 from scipy import fftpack
 import matplotlib.pyplot as plt
 
-a = np.linspace(0,9,10)
-print a
+a = np.linspace(0,6,7)
+#print a
 b = np.fft.fft(a)
-print b
+#print b
 c = fftpack.fft(a)
-print c
+#print c
 
 def fourier(func,N):
     G = np.array(list())
@@ -22,15 +22,20 @@ def fourier(func,N):
 
     return G
 
-print fourier(a,10)
+#print fourier(a,10)
 
+aa = np.fft.fft(a)
 signal = np.array([-2, 8, 6, 4, 1, 0, 3, 5], dtype=float)
 fourier = np.fft.fft(signal)
-print fourier
+print aa
 n = signal.size
-print n
+print "Ok"
 timestep = 0.1
-freq = np.fft.fftfreq(6, d=timestep)
-print  freq
-plt.scatter(freq,abs(fourier))
-plt.show()
+freq = np.fft.fftfreq(7, d=timestep)
+#print  freq
+shift = np.fft.fftshift(freq)
+shift2 = np.fft.fftshift(aa)
+print shift2
+#plt.plot(shift,abs(shift2))
+
+#plt.show()

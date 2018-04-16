@@ -19,6 +19,7 @@ double lagrange(double x, int G, double *setX, double *setY);
 vector<complex<double> > fou(double *unP, int N);
 vector<double> ffreq(double n, double sp);
 vector<double> rear(vector<double> inar);
+vector<complex<double> > rearTT(vector<complex<double> > inarTT);
 
 int main(int argc, char **argv){
 
@@ -124,30 +125,40 @@ int main(int argc, char **argv){
     //Fourier
     //fou(LLp,numL);
 
-    double aa[10] = {0,1,2,3,4,5,6,7,8,9};
+    double aa[10] = {0,1,2,3,4,5,6};
     //complex<double>ff[10] = fou(aa,10);
-    vector<complex<double> > ff = fou(aa,10);
+    vector<complex<double> > ff = fou(aa,7);
 
-    //for(int i = 0; i<10; i++){
-        //cout << ff[i]<<endl;
-    //}
+    for(int i = 0; i<7; i++){
+        cout << ff[i]<<endl;
+    }
+
+    vector<complex<double> > rFt = rearTT(ff);
+
+    cout << "Mariscos"<<endl;
+    for(int i = 0; i<7; i++){
+        cout << rFt[i]<<endl;
+    }
+
+    /*
     //Size de array de transformadas de fourier
     int size  = ff.size();
-    //cout << size<<endl;
-    //cout << "size"<<endl;
-    vector<double> ffr = ffreq(12,0.1);
+    cout << size<<endl;
+    cout << "size"<<endl;
+    vector<double> ffr = ffreq(10,0.1);
     //loop must be same size as n ffreq
-    for(int i = 0; i<12; i++){
+    for(int i = 0; i<10; i++){
         cout << ffr[i]<<endl;
     }
     int size1  = ffr.size();
-    //cout << size1<<endl;
+    cout << size1<<endl;
 
     cout << "rears"<<endl;
     vector<double> re = rear(ffr);
-    for(int i = 0; i<12; i++){
+    for(int i = 0; i<10; i++){
         cout << re[i]<<endl;
     }
+    */
 
 return 0;
 }
@@ -263,7 +274,7 @@ vector<double> rear(vector<double> inar){
     //Redondea hacia abajo
     double cenP = int(n/2.0);
     double cenI = int((n+1)/2.0);
-    //size de inar par
+
     if(fmod(n, 2.0) != 0.0){
         for (int k = cenI-1; k<(cenI-1)*2; k++){
             double a = inar[k];
@@ -274,6 +285,7 @@ vector<double> rear(vector<double> inar){
             sol.push_back(a);
         }
     }
+    //Par
     else{
       for (int k = cenP; k<cenP*2; k++){
           double a = inar[k];
@@ -281,6 +293,41 @@ vector<double> rear(vector<double> inar){
       }
       for (int k = 1; k<cenP; k++){
           double a = inar[k];
+          sol.push_back(a);
+      }
+    }
+    return sol;
+}
+
+//Reorganiza la transformada obtenidas como rear
+//Param: array de size variable de transformada
+//Return: array de input organizado
+vector<complex<double> > rearTT(vector<complex<double> > inarTT){
+    vector<complex<double> > sol;
+    int n = inarTT.size();
+    //Redondea hacia abajo
+    double cenP = int(n/2.0);
+    double cenI = int((n+1)/2.0);
+    //Impar
+    if(fmod(n, 2.0) != 0.0){
+
+        for (int k = cenI; k<(cenI*2)-1; k++){
+            complex<double> a = inarTT[k];
+            sol.push_back(a);
+        }
+        for (int k = 0; k<cenI; k++){
+            complex<double> a = inarTT[k];
+            sol.push_back(a);
+        }
+    }
+    else{
+
+      for (int k = cenP; k<cenP*2; k++){
+          complex<double> a = inarTT[k];
+          sol.push_back(a);
+      }
+      for (int k = 0; k<cenP; k++){
+          complex<double> a = inarTT[k];
           sol.push_back(a);
       }
     }
